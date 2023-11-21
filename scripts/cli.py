@@ -42,7 +42,7 @@ def run_apktool(option: list, apk_path: str):
                 if not '--use-aapt2' in option:
                     recommend_options += ['--use-aapt2']
                 if not '--no-res' in option:
-                    recommend_options += ['-r']
+                    recommend_options += ['--no-res']
 
                 if recommend_options:
                     logger.error("Recommend using the '%s' options.", ", ".join(recommend_options))
@@ -255,9 +255,15 @@ def run(apk_path: str, arch: str, use_aapt2:bool, no_res:bool,
         if decompiled_path.exists():
             shutil.rmtree(decompiled_path)
         decompiled_path.mkdir()
-
+        
+        decompile_option = ['d', '-o', str(decompiled_path.resolve()), '-f']
+        if use_aapt2:
+            decompile_option += ['--use-aapt2']
+        if no_res:
+            decompile_option += ['--no-res']
+        
         # APK decompile with apktool
-        run_apktool(['d', '-o', str(decompiled_path.resolve()), '-f'], str(apk_path.resolve()))
+        run_apktool(decompile_option, str(apk_path.resolve()))
     else:
         if not decompiled_path.exists():
             logger.error("Decompiled directory not found: %s", decompiled_path)
@@ -274,7 +280,7 @@ def run(apk_path: str, arch: str, use_aapt2:bool, no_res:bool,
         if use_aapt2:
             recompile_option += ['--use-aapt2']
         if no_res:
-            recompile_option += ['-r']
+            recompile_option += ['--no-res']
 
         run_apktool(recompile_option, str(decompiled_path.resolve()))
         apk_path = decompiled_path.joinpath('dist', apk_path.name)
