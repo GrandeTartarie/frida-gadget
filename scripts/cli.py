@@ -42,7 +42,7 @@ def run_apktool(option: list, apk_path: str):
                 if not '--use-aapt2' in option:
                     recommend_options += ['--use-aapt2']
                 if not '--no-res' in option:
-                    recommend_options += ['--no-res']
+                    recommend_options += ['-r']
 
                 if recommend_options:
                     logger.error("Recommend using the '%s' options.", ", ".join(recommend_options))
@@ -156,7 +156,7 @@ def modify_manifest(decompiled_path):
     # Add internet permission
     logger.debug("Checking internet permission and extractNativeLibs settings")
     android_manifest = decompiled_path.joinpath("AndroidManifest.xml")
-    txt = android_manifest.read_text(encoding="utf-8")
+    txt = android_manifest.read_text(encoding="latin1")
     pos = txt.index('</manifest>')
     permission = 'android.permission.INTERNET'
 
@@ -171,7 +171,7 @@ def modify_manifest(decompiled_path):
         logger.debug('Editing the extractNativeLibs="true"')
         txt = txt.replace(':extractNativeLibs="false"',
                             ':extractNativeLibs="true"')
-    android_manifest.write_text(txt, encoding="utf-8")
+    android_manifest.write_text(txt, encoding="latin1")
 
 def inject_gadget_into_apk(apk_path:str, arch:str, decompiled_path:str):
     """Inject frida gadget into an APK
@@ -274,7 +274,7 @@ def run(apk_path: str, arch: str, use_aapt2:bool, no_res:bool,
         if use_aapt2:
             recompile_option += ['--use-aapt2']
         if no_res:
-            recompile_option += ['--no-res']
+            recompile_option += ['-r']
 
         run_apktool(recompile_option, str(decompiled_path.resolve()))
         apk_path = decompiled_path.joinpath('dist', apk_path.name)
