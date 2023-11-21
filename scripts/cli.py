@@ -256,7 +256,7 @@ def run(apk_path: str, arch: str, use_aapt2:bool, no_res:bool,
             shutil.rmtree(decompiled_path)
         decompiled_path.mkdir()
         
-        decompile_option = ['d', '-o', str(decompiled_path.resolve()), '-f']
+        decompile_option = ['d', '-f']
         if use_aapt2:
             decompile_option += ['--use-aapt2']
         if no_res:
